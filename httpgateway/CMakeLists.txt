@@ -22,11 +22,6 @@ add_executable(httpgateway main.cpp
     requesthandlerredirect.h requesthandlerredirect.cpp
     endpoint.h endpoint.cpp
     httpconnection.h
-#    Endpoint.h Endpoint.cpp
-#    IHttpRequestHandler.h
-#    GetHandler.h GetHandler.cpp
-#    HttpRequestHandler.h HttpRequestHandler.cpp
-#    NotAllowedHandler.h NotAllowedHandler.cpp
     ../IoC/IoC.cpp ../IoC/IoC.h
     ../IoC/IocNewScopeCommand.cpp ../IoC/IocNewScopeCommand.h
     ../IoC/IocRegisterCommand.cpp ../IoC/IocRegisterCommand.h
@@ -48,19 +43,10 @@ add_executable(httpgateway main.cpp
     isendableconnection.h
     httpreadsocketconnection.h
     httpsendconnection.h
-#    HttpRequestInterpretCommand.h HttpRequestInterpretCommand.cpp
-#    HttpRequest.h HttpRequest.cpp
-#    ../interface/IOutputCommandStream.h
-#    DirectCommandExecutor.h DirectCommandExecutor.cpp
-#    BadRequestHandler.h BadRequestHandler.cpp
-#    IRequestAcceptingObject.h
-#    HttpRequestAcceptingObject.h HttpRequestAcceptingObject.cpp
-#    DeleteHttpRequestCommand.h DeleteHttpRequestCommand.cpp
-#    ../commands/MacroCommand.cpp ../commands/MacroCommand.h
-#    ../exceptions/CommandException.cpp ../exceptions/CommandException.h
-#    HttpBadRequestCommand.h HttpBadRequestCommand.cpp
-#    HttpRedirectCommand.h HttpRedirectCommand.cpp3
-#    HttpNotAllowedCommand.h HttpNotAllowedCommand.cpp
+    httprequestjsonobject.h httprequestjsonobject.cpp
+    httpredirectorresolver.h httpredirectorresolver.cpp
+#-------------------
+    checkconditioncommand.h checkconditioncommand.cpp
     )
 
 # include(GNUInstallDirs)

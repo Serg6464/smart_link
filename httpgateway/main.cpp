@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <string>
 #include <IoC.h>
 #include <ICommand.h>
 
@@ -14,7 +15,8 @@
 #include "httpconnection.h"
 #include "httpreadsocketconnection.h"
 #include "processpacketcmd.h"
-
+#include "httprequestjsonobject.h"
+#include "httpredirectorresolver.h"
 
 //All logic dependency initialization. 
 void IoC_Init();
@@ -38,6 +40,47 @@ int main(void)
 
 void IoC_Init()
 {
+    std::string json_str = R"(
+    {
+      "version": "1.0",
+      "rules": [
+        {
+          "name": "Правило для мобильных устройств",
+          "conditions": [
+            {
+              "type": "target",
+              "value": "/welcome"
+            },
+            {
+              "type": "user_agent_contain",
+              "value": "Mobile"
+            },
+          ],
+          "redirect_url": "https://mobile.example.com",
+          }
+        },
+        {
+          "name": "Правило для Chrome до начала рабочего времени",
+          "conditions": [
+            {
+              "type": "user_agent_contain",
+              "value": "Chrome"
+            },
+            {
+              "type": "time_of_day_before",
+              "value": "08:00:00"
+            }
+          ],
+          "actions": {
+            "redirect_url": "https://early.example.com",
+          }
+        }
+      ]
+    }
+    )";
+
+    JsonPtr jsonRules = std::make_shared<Json>(boost::json::parse(json_str));
+
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",
         "Connection.GetNew",
@@ -83,4 +126,13 @@ void IoC_Init()
                 return cmd;
             } )))->Execute();
 
-}
+    IoC::Resolve<ICommandPtr>(
+        "IoC.Register",
+        "ProcessPacketCmd.GetRedirector",
+        make_container(std::function<IRedirectorPtr(std::shared_ptr<IHttpRequest>)>( [](std::shared_ptr<IHttpRequest> req) {
+                auto json_request = HttpRequestJsonObject::Create(req);
+                IRedirectorPtr res = std::make_shared<HttpRedirectorResolver>(json_request);
+                return res;
+            } )))->Execute();
+
+ }
