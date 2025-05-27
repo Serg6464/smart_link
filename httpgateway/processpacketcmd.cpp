@@ -17,7 +17,7 @@ std::shared_ptr<ProcessPacketCmd> ProcessPacketCmd::Create(std::shared_ptr<HttpC
 
 void ProcessPacketCmd::Execute()
 {
-    std::shared_ptr<ChainRequestHandler> handler = IoC::Resolve<std::shared_ptr<ChainRequestHandler>>("ProcessPacketCmd.GetHandler");
+    std::shared_ptr<IRequestHandler> handler = IoC::Resolve<std::shared_ptr<IRequestHandler>>("ProcessPacketCmd.GetHandler");
     std::shared_ptr<HttpResponse> response = std::make_shared<HttpResponse>();
     handler->handle(_request, response);
     HttpSendConnection sendconnection(_connection, response);

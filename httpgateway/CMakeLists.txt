@@ -47,6 +47,12 @@ add_executable(httpgateway main.cpp
     httpredirectorresolver.h httpredirectorresolver.cpp
 #-------------------
     checkconditioncommand.h checkconditioncommand.cpp
+    irules.h
+    irequesthandler.h
+    ruleshandler.h ruleshandler.cpp
+    ../commands/MacroCommand.cpp ../commands/MacroCommand.h
+    ../exceptions/CommandException.cpp ../exceptions/CommandException.h
+    conditiontarget.h
     )
 
 # include(GNUInstallDirs)

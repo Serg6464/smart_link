@@ -1,11 +1,10 @@
 #ifndef CHAINREQUESTHANDLER_H
 #define CHAINREQUESTHANDLER_H
 
-#include "ihttprequest.h"
-#include "ihttpresponse.h"
+#include "irequesthandler.h"
 #include <memory>
 
-class ChainRequestHandler
+class ChainRequestHandler:public IRequestHandler
 {
 protected:
  std::shared_ptr<ChainRequestHandler> next_;
@@ -18,7 +17,7 @@ public:
     {
         next_ = next;
     };
-    virtual bool handle(std::shared_ptr<IHttpRequest> request, std::shared_ptr<IHttpResponse> response)
+    bool handle(std::shared_ptr<IHttpRequest> request, std::shared_ptr<IHttpResponse> response)
     {
         if (next_ != nullptr) {
             return next_->handle(request, response);
