@@ -1,29 +1,22 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(httpgateway LANGUAGES CXX)
+project(httpredirector LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Находим Boost и требуемый компонент json
+find_package(Boost REQUIRED COMPONENTS json)
 
 include_directories(../IoC)
 include_directories(../exceptions)
 include_directories(../interface)
 include_directories(../commands)
+include_directories(../httpgateway)
 include_directories(../json)
-include_directories(.)
 
-add_executable(httpgateway main.cpp
-    ihttprequest.h
-    ihttpresponse.h
-    httprequest.h httprequest.cpp
-    httpresponse.h
-    chainrequesthandler.h
-
-    requesthandlerhead.h requesthandlerhead.cpp
-    requesthandlerbad.h requesthandlerbad.cpp
-    requesthandlerredirect.h requesthandlerredirect.cpp
+add_executable(httpredirector main.cpp
     endpoint.h endpoint.cpp
-    socketconnection.h
     ../IoC/IoC.cpp ../IoC/IoC.h
     ../IoC/IocNewScopeCommand.cpp ../IoC/IocNewScopeCommand.h
     ../IoC/IocRegisterCommand.cpp ../IoC/IocRegisterCommand.h
@@ -39,28 +32,30 @@ add_executable(httpgateway main.cpp
     ../exceptions/RuntimeError.cpp ../exceptions/RuntimeError.h
     ../commands/FallbackCommand.cpp ../commands/FallbackCommand.h
     ../exceptions/InvalidArgument.cpp ../exceptions/InvalidArgument.h
-    processpacketcmd.h processpacketcmd.cpp
-    requesthandlernotallowed.h requesthandlernotallowed.cpp
-    ireadableconnection.h
-    isendableconnection.h
-    httpreadconnection.h
-    httpsendconnection.h
-    httprequestjsonobject.h httprequestjsonobject.cpp
-    httpredirectorresolver.h httpredirectorresolver.cpp
+    jsonreadconnection.h
+    jsonsendconnection.h
     ../json/boostjsonobject.h
+    resolveredirectioncommand.h resolveredirectioncommand.cpp
+ #   ireadableconnection.h
+ # isendableconnection.h
+#    httpreadsocketconnection.h
+#    httpsendconnection.h
+#    httprequestjsonobject.h httprequestjsonobject.cpp
+    httpredirectorresolver.h httpredirectorresolver.cpp
 #-------------------
-    ijsonobject.h icondition.h
-    checkconditioncommand.h checkconditioncommand.cpp
-    irules.h
-    irequesthandler.h
-    ruleshandler.h ruleshandler.cpp
+#    checkconditioncommand.h checkconditioncommand.cpp
+ #   irules.h
+ #   irequesthandler.h
+ #   ruleshandler.h ruleshandler.cpp
     ../commands/MacroCommand.cpp ../commands/MacroCommand.h
     ../exceptions/CommandException.cpp ../exceptions/CommandException.h
-    conditiontarget.h
-    httpredirectorresolverservice.h httpredirectorresolverservice.cpp
-
-
+    sendnewlocationcommand.h sendnewlocationcommand.cpp
+ #   conditiontarget.h
     )
+
+target_link_libraries( httpredirector
+    Boost::json
+)
 
 # include(GNUInstallDirs)
 # install(TARGETS httpgateway

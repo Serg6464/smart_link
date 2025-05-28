@@ -2,11 +2,12 @@
 #define SOCKETCONNECTION_H
 
 #include <boost/beast/core.hpp>
+//#include <boost/beast/http.hpp>
 #include <boost/asio.hpp>
 #include <boost/beast/version.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
-namespace http = boost::beast::http;
+//namespace http = boost::beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 

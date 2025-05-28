@@ -4,27 +4,22 @@
 #include <IoC.h>
 #include <ICommand.h>
 
-#include "requesthandlerhead.h"
-#include "requesthandlerbad.h"
-#include "requesthandlerredirect.h"
-#include "requesthandlernotallowed.h"
-#include "httprequest.h"
-#include "httpresponse.h"
 #include "endpoint.h"
 
-#include "socketconnection.h"
-#include "httpreadconnection.h"
-#include "processpacketcmd.h"
-#include "httprequestjsonobject.h"
-#include "httpredirectorresolverservice.h"
+#include <socketconnection.h>
+#include "jsonreadconnection.h"
+#include "jsonsendconnection.h"
+#include "boostjsonobject.h"
+#include "resolveredirectioncommand.h"
+#include <MacroCommand.h>
+#include "sendnewlocationcommand.h"
 
-
-#include "httpredirectorresolver.h"
+/*
 #include "ruleshandler.h"
 #include "checkconditioncommand.h"
 #include "icondition.h"
-#include <MacroCommand.h>
 #include "conditiontarget.h"
+*/
 
 //All logic dependency initialization. 
 void IoC_Init();
@@ -113,7 +108,7 @@ void IoC_Init()
         "Connection.GetNew",
         make_container(std::function<std::shared_ptr<SocketConnection>()>( []() {
                 boost::asio::io_context io_context;
-                tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 8080));
+                tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 8091));
     std::cout << "start waiting request\n";
                 std::shared_ptr<tcp::socket> socket = std::make_shared<tcp::socket>(io_context);
                 std::shared_ptr<SocketConnection> conn = std::make_shared<SocketConnection>(socket);
@@ -124,50 +119,31 @@ void IoC_Init()
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",
         "Request.GetNew",
-                make_container(std::function<std::shared_ptr<IHttpRequest>(std::shared_ptr<SocketConnection>)>( [](std::shared_ptr<SocketConnection> conn) {
-                        std::shared_ptr<IHttpRequest> req = HttpRequest::Create();
-                        std::shared_ptr<IReadableConnection> readconn = std::make_shared<HttpReadConnection>(conn,req);
+                make_container(std::function<IJsonObjectPtr(std::shared_ptr<SocketConnection>)>( [](std::shared_ptr<SocketConnection> conn) {
+                        auto req = BoostJsonObject::Create();
+                        std::shared_ptr<IReadableConnection> readconn = std::make_shared<JsonReadConnection>(conn,req);
                         readconn->read();
-                        return req;
+                        return (IJsonObjectPtr)req;
                     } )))->Execute();
-    IoC::Resolve<ICommandPtr>(
-        "IoC.Register",
-        "ProcessPacketCmd.GetHandler",
-        make_container(std::function<std::shared_ptr<IRequestHandler>()>( []() {
-               std::shared_ptr<RequestHandlerHead> headHandler = std::make_shared<RequestHandlerHead>() ;
-               std::shared_ptr<RequestHandlerBad> badHandler = std::make_shared<RequestHandlerBad>() ;
-               std::shared_ptr<RequestHandlerRedirect> redirectHandler = std::make_shared<RequestHandlerRedirect>() ;
-               std::shared_ptr<RequestHandlerNotAllowed> notallowHandler = std::make_shared<RequestHandlerNotAllowed>() ;
-               headHandler->setNext(badHandler);
-               badHandler->setNext(redirectHandler);
-               redirectHandler->setNext(notallowHandler);
-                return (std::shared_ptr<IRequestHandler>)headHandler;
-            } )))->Execute();
 
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",
         "ProcessPacketCmd.Get",
-        make_container(std::function<ICommandPtr(std::shared_ptr<SocketConnection>,std::shared_ptr<IHttpRequest>)>( [](std::shared_ptr<SocketConnection> conn, std::shared_ptr<IHttpRequest> req) {
-                std::shared_ptr<HttpResponse> resp = std::make_shared<HttpResponse>();
-                ICommandPtr cmd = ProcessPacketCmd::Create(conn, req);
-                return cmd;
+        make_container(std::function<ICommandPtr(std::shared_ptr<SocketConnection>,IJsonObjectPtr)>( [](std::shared_ptr<SocketConnection> conn, IJsonObjectPtr req) {
+                std::vector<ICommandPtr> commands;
+                IJsonObjectPtr resp = BoostJsonObject::Create();
+                commands.push_back( ResolveRedirectionCommand::Create(req, resp));
+                //create send cmd
+                JsonSendConnectionPtr sendconn = JsonSendConnection::Create(conn, resp);
+                commands.push_back(SendNewLocationCommand::Create(sendconn));
+
+                return MacroCommand::Create(commands);
             } )))->Execute();
-
-
+/*
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",
         "ProcessPacketCmd.GetRedirector",
-        make_container(std::function<IRedirectorPtr(std::shared_ptr<IHttpRequest>)>( [](std::shared_ptr<IHttpRequest> req) {
-                auto json_request = HttpRequestJsonObject::Create(req);
-                IRedirectorPtr res = std::make_shared<HttpRedirectorResolverService>(json_request, "127.0.0.1", 8091);
-                return res;
-            } )))->Execute();
-
-    IoC::Resolve<ICommandPtr>(
-        "IoC.Register",
-        "ProcessPacketCmd.GetRedirectorDirect",
-        make_container(std::function<IRedirectorPtr(std::shared_ptr<IHttpRequest>)>( [](std::shared_ptr<IHttpRequest> req) {
-                auto json_request = HttpRequestJsonObject::Create(req);
+        make_container(std::function<IRedirectorPtr(std::shared_ptr<JsonPtr>)>( [](std::shared_ptr<JsonPtr> json_request) {
                 IRedirectorPtr res = std::make_shared<HttpRedirectorResolver>(json_request);
                 return res;
             } )))->Execute();
@@ -214,5 +190,5 @@ void IoC_Init()
                 }
                 return (IConditionPtr)nullptr;
             })))->Execute();
-
+*/
  }
