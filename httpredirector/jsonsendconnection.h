@@ -4,15 +4,6 @@
 #include <isendableconnection.h>
 #include <ijsonobject.h>
 
-/*
-#include <boost/json.hpp>
-#include <boost/json/src.hpp>
-#include <boost/asio.hpp>
-#include <iostream>
-#include <string>
-*/
-
-
 class JsonSendConnection;
 using JsonSendConnectionPtr = std::shared_ptr<JsonSendConnection>;
 class JsonSendConnection : public ISendableConnection

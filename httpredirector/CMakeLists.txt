@@ -36,21 +36,14 @@ add_executable(httpredirector main.cpp
     jsonsendconnection.h
     ../json/boostjsonobject.h
     resolveredirectioncommand.h resolveredirectioncommand.cpp
- #   ireadableconnection.h
- # isendableconnection.h
-#    httpreadsocketconnection.h
-#    httpsendconnection.h
-#    httprequestjsonobject.h httprequestjsonobject.cpp
     httpredirectorresolver.h httpredirectorresolver.cpp
-#-------------------
-#    checkconditioncommand.h checkconditioncommand.cpp
- #   irules.h
- #   irequesthandler.h
- #   ruleshandler.h ruleshandler.cpp
+    checkconditioncommand.h checkconditioncommand.cpp
+    irules.h
+    ruleshandler.h ruleshandler.cpp
     ../commands/MacroCommand.cpp ../commands/MacroCommand.h
     ../exceptions/CommandException.cpp ../exceptions/CommandException.h
-    sendnewlocationcommand.h sendnewlocationcommand.cpp
- #   conditiontarget.h
+    sendnewlocationcommand.h
+    conditiontarget.h
     )
 
 target_link_libraries( httpredirector

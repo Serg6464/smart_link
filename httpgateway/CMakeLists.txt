@@ -5,6 +5,10 @@ project(httpgateway LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Находим Boost и требуемый компонент json
+find_package(Boost REQUIRED COMPONENTS json)
+
+
 include_directories(../IoC)
 include_directories(../exceptions)
 include_directories(../interface)
@@ -46,21 +50,18 @@ add_executable(httpgateway main.cpp
     httpreadconnection.h
     httpsendconnection.h
     httprequestjsonobject.h httprequestjsonobject.cpp
-    httpredirectorresolver.h httpredirectorresolver.cpp
     ../json/boostjsonobject.h
 #-------------------
-    ijsonobject.h icondition.h
-    checkconditioncommand.h checkconditioncommand.cpp
-    irules.h
+    ijsonobject.h
     irequesthandler.h
-    ruleshandler.h ruleshandler.cpp
     ../commands/MacroCommand.cpp ../commands/MacroCommand.h
     ../exceptions/CommandException.cpp ../exceptions/CommandException.h
-    conditiontarget.h
     httpredirectorresolverservice.h httpredirectorresolverservice.cpp
-
-
     )
+
+target_link_libraries( httpgateway
+    Boost::json
+)
 
 # include(GNUInstallDirs)
 # install(TARGETS httpgateway

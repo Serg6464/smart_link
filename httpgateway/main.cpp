@@ -18,13 +18,15 @@
 #include "httprequestjsonobject.h"
 #include "httpredirectorresolverservice.h"
 
-
+/*
 #include "httpredirectorresolver.h"
 #include "ruleshandler.h"
 #include "checkconditioncommand.h"
 #include "icondition.h"
 #include <MacroCommand.h>
 #include "conditiontarget.h"
+*/
+
 
 //All logic dependency initialization. 
 void IoC_Init();
@@ -162,57 +164,5 @@ void IoC_Init()
                 IRedirectorPtr res = std::make_shared<HttpRedirectorResolverService>(json_request, "127.0.0.1", 8091);
                 return res;
             } )))->Execute();
-
-    IoC::Resolve<ICommandPtr>(
-        "IoC.Register",
-        "ProcessPacketCmd.GetRedirectorDirect",
-        make_container(std::function<IRedirectorPtr(std::shared_ptr<IHttpRequest>)>( [](std::shared_ptr<IHttpRequest> req) {
-                auto json_request = HttpRequestJsonObject::Create(req);
-                IRedirectorPtr res = std::make_shared<HttpRedirectorResolver>(json_request);
-                return res;
-            } )))->Execute();
-
-    IoC::Resolve<ICommandPtr>(
-        "IoC.Register",
-        "Redirector.GetLocationRule",
-        make_container(std::function<IRulesPtr(IJsonObjectPtr)>( [jsonRules](IJsonObjectPtr httpjsonobject) {
-                //Создаю цепочку обработчиков правил, внутри каждого все условия для конкретного правила
-                //в данной реализации правила из json
-                RulesHandlerPtr rules_chain = nullptr;
-                // Проходим по всем правилам
-                for (const auto& ruleNode : jsonRules->as_object().at("rules").as_array()) {
-                    std::vector<ICommandPtr> commands;
-                    // Собираем условия
-                    for (const auto& conditionNode : ruleNode.as_object().at("conditions").as_array()) {
-                            commands.push_back(CheckConditionCommand::Create(
-                                    conditionNode.as_object().at("type").as_string().c_str(),
-                                    conditionNode.as_object().at("value").as_string().c_str(),
-                                    httpjsonobject->getJson()
-                                    ));
-
-                    }
-
-                     // Получаем действия
-                    std::string redirect_url = ruleNode.as_object().at("redirect_url").as_string().c_str();
-                    auto newRule = RulesHandler::Create(redirect_url, MacroCommand::Create(commands));
-                    newRule->setNext(rules_chain);
-                    rules_chain = newRule;
-                }
-                return rules_chain;
-            } )))->Execute();
-
-    IoC::Resolve<ICommandPtr>(
-            "IoC.Register",
-            "Condition.Get",
-            make_container(std::function<IConditionPtr(std::string condition, std::string)>( [](std::string condition, std::string parameter) {
-
-                // TODO: загрузка плагинов
-                std::cout<<"resolve condition "<<condition << std::endl;
-                if (condition == "target")
-                {
-                    return (IConditionPtr)ConditionTarget::Create(parameter);
-                }
-                return (IConditionPtr)nullptr;
-            })))->Execute();
 
  }

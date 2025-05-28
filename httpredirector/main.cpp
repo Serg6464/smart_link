@@ -14,12 +14,13 @@
 #include <MacroCommand.h>
 #include "sendnewlocationcommand.h"
 
-/*
+#include "httpredirectorresolver.h"
 #include "ruleshandler.h"
 #include "checkconditioncommand.h"
 #include "icondition.h"
+#include <MacroCommand.h>
 #include "conditiontarget.h"
-*/
+
 
 //All logic dependency initialization. 
 void IoC_Init();
@@ -139,11 +140,11 @@ void IoC_Init()
 
                 return MacroCommand::Create(commands);
             } )))->Execute();
-/*
+
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",
         "ProcessPacketCmd.GetRedirector",
-        make_container(std::function<IRedirectorPtr(std::shared_ptr<JsonPtr>)>( [](std::shared_ptr<JsonPtr> json_request) {
+        make_container(std::function<IRedirectorPtr(IJsonObjectPtr)>( [](IJsonObjectPtr json_request) {
                 IRedirectorPtr res = std::make_shared<HttpRedirectorResolver>(json_request);
                 return res;
             } )))->Execute();
@@ -190,5 +191,5 @@ void IoC_Init()
                 }
                 return (IConditionPtr)nullptr;
             })))->Execute();
-*/
+
  }

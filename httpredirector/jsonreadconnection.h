@@ -4,16 +4,6 @@
 #include <ireadableconnection.h>
 #include <ijsonobject.h>
 
-/*#include <boost/json.hpp>
-#include <boost/json/src.hpp>
-#include <boost/asio.hpp>
-#include <iostream>
-#include <string>
-
-using Json = boost::json::value;
-using JsonPtr = std::shared_ptr<Json>;
-*/
-
 class JsonReadConnection;
 using JsonReadConnectionPtr = std::shared_ptr<JsonReadConnection>;
 
