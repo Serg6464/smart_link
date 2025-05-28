@@ -14,13 +14,16 @@ bool RequestHandlerRedirect::handle(std::shared_ptr<IHttpRequest> request, std::
     {
         if (request->getRequest()->method() == http::verb::get) {
             auto redirector = IoC::Resolve<IRedirectorPtr>("ProcessPacketCmd.GetRedirector", request);
-            auto& res = response->getResponse();
-            res.result(http::status::temporary_redirect);
-            res.set(http::field::location, redirector->GetLocation());
-            res.set(http::field::content_type, "text/plain");
-            res.body() = "Redirect";
-            res.prepare_payload();
-            return true;
+            auto new_location = redirector->GetLocation();
+            if( new_location != "" ){
+                auto& res = response->getResponse();
+                res.result(http::status::temporary_redirect);
+                res.set(http::field::location, new_location);
+                res.set(http::field::content_type, "text/plain");
+                res.body() = "Redirect";
+                res.prepare_payload();
+                return true;
+            }
         }
     } catch ( IException *e )
     {
