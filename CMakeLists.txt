@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(httpgateway)
+#add_subdirectory(httpredirector)
 
 
 add_subdirectory(IoC.test)

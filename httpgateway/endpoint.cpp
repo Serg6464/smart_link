@@ -2,7 +2,7 @@
 #include <IoC.h>
 
 #include "httprequest.h"
-#include "httpconnection.h"
+#include "socketconnection.h"
 #include <ICommand.h>
 
 #include <iostream>
@@ -19,7 +19,7 @@ void EndPoint::Run()
 
     while( !stop )
     {
-        auto conn = IoC::Resolve<std::shared_ptr<HttpConnection>>("Connection.GetNew");
+        auto conn = IoC::Resolve<std::shared_ptr<SocketConnection>>("Connection.GetNew");
         auto request = IoC::Resolve<std::shared_ptr<IHttpRequest>>("Request.GetNew",conn);
 
         std::cout << *(request->getRequest()) << std::endl;

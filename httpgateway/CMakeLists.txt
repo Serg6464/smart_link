@@ -21,7 +21,7 @@ add_executable(httpgateway main.cpp
     requesthandlerbad.h requesthandlerbad.cpp
     requesthandlerredirect.h requesthandlerredirect.cpp
     endpoint.h endpoint.cpp
-    httpconnection.h
+    socketconnection.h
     ../IoC/IoC.cpp ../IoC/IoC.h
     ../IoC/IocNewScopeCommand.cpp ../IoC/IocNewScopeCommand.h
     ../IoC/IocRegisterCommand.cpp ../IoC/IocRegisterCommand.h
@@ -41,11 +41,12 @@ add_executable(httpgateway main.cpp
     requesthandlernotallowed.h requesthandlernotallowed.cpp
     ireadableconnection.h
     isendableconnection.h
-    httpreadsocketconnection.h
+    httpreadconnection.h
     httpsendconnection.h
     httprequestjsonobject.h httprequestjsonobject.cpp
     httpredirectorresolver.h httpredirectorresolver.cpp
 #-------------------
+    ijsonobject.h icondition.h
     checkconditioncommand.h checkconditioncommand.cpp
     irules.h
     irequesthandler.h

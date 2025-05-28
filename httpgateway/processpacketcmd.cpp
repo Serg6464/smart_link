@@ -4,12 +4,12 @@
 #include "httpresponse.h"
 #include "httpsendconnection.h"
 
-ProcessPacketCmd::ProcessPacketCmd(std::shared_ptr<HttpConnection> connection,std::shared_ptr<IHttpRequest> request)
+ProcessPacketCmd::ProcessPacketCmd(std::shared_ptr<SocketConnection> connection,std::shared_ptr<IHttpRequest> request)
     :_connection(connection), _request(request)
 {
 }
 
-std::shared_ptr<ProcessPacketCmd> ProcessPacketCmd::Create(std::shared_ptr<HttpConnection> connection, std::shared_ptr<IHttpRequest> request)
+std::shared_ptr<ProcessPacketCmd> ProcessPacketCmd::Create(std::shared_ptr<SocketConnection> connection, std::shared_ptr<IHttpRequest> request)
 {
     std::shared_ptr<ProcessPacketCmd> cmd = std::make_shared<ProcessPacketCmd>(connection, request);
     return cmd;

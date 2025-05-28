@@ -12,8 +12,8 @@
 #include "httpresponse.h"
 #include "endpoint.h"
 
-#include "httpconnection.h"
-#include "httpreadsocketconnection.h"
+#include "socketconnection.h"
+#include "httpreadconnection.h"
 #include "processpacketcmd.h"
 #include "httprequestjsonobject.h"
 #include "httpredirectorresolver.h"
@@ -108,12 +108,12 @@ void IoC_Init()
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",
         "Connection.GetNew",
-        make_container(std::function<std::shared_ptr<HttpConnection>()>( []() {
+        make_container(std::function<std::shared_ptr<SocketConnection>()>( []() {
                 boost::asio::io_context io_context;
                 tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 8080));
     std::cout << "start waiting request\n";
                 std::shared_ptr<tcp::socket> socket = std::make_shared<tcp::socket>(io_context);
-                std::shared_ptr<HttpConnection> conn = std::make_shared<HttpConnection>(socket);
+                std::shared_ptr<SocketConnection> conn = std::make_shared<SocketConnection>(socket);
                 acceptor.accept( conn->socket() );
                 return conn;
             } )))->Execute();
@@ -121,9 +121,9 @@ void IoC_Init()
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",
         "Request.GetNew",
-                make_container(std::function<std::shared_ptr<IHttpRequest>(std::shared_ptr<HttpConnection>)>( [](std::shared_ptr<HttpConnection> conn) {
+                make_container(std::function<std::shared_ptr<IHttpRequest>(std::shared_ptr<SocketConnection>)>( [](std::shared_ptr<SocketConnection> conn) {
                         std::shared_ptr<IHttpRequest> req = HttpRequest::Create();
-                        std::shared_ptr<IReadableConnection> readconn = std::make_shared<HttpReadSocketConnection>(conn,req);
+                        std::shared_ptr<IReadableConnection> readconn = std::make_shared<HttpReadConnection>(conn,req);
                         readconn->read();
                         return req;
                     } )))->Execute();
@@ -144,7 +144,7 @@ void IoC_Init()
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",
         "ProcessPacketCmd.Get",
-        make_container(std::function<ICommandPtr(std::shared_ptr<HttpConnection>,std::shared_ptr<IHttpRequest>)>( [](std::shared_ptr<HttpConnection> conn, std::shared_ptr<IHttpRequest> req) {
+        make_container(std::function<ICommandPtr(std::shared_ptr<SocketConnection>,std::shared_ptr<IHttpRequest>)>( [](std::shared_ptr<SocketConnection> conn, std::shared_ptr<IHttpRequest> req) {
                 std::shared_ptr<HttpResponse> resp = std::make_shared<HttpResponse>();
                 ICommandPtr cmd = ProcessPacketCmd::Create(conn, req);
                 return cmd;

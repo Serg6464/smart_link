@@ -6,10 +6,10 @@
 
 class HttpSendConnection: public ISendableConnection
 {
-    std::shared_ptr<HttpConnection> _connection;
+    std::shared_ptr<SocketConnection> _connection;
     std::shared_ptr<IHttpResponse> _response;
 public:
-    HttpSendConnection( std::shared_ptr<HttpConnection> connection, std::shared_ptr<IHttpResponse> response):
+    HttpSendConnection( std::shared_ptr<SocketConnection> connection, std::shared_ptr<IHttpResponse> response):
         _connection(connection), _response(response)
     {};
 

@@ -1,5 +1,5 @@
-#ifndef HTTPCONNECTION_H
-#define HTTPCONNECTION_H
+#ifndef SOCKETCONNECTION_H
+#define SOCKETCONNECTION_H
 
 #include <boost/beast/core.hpp>
 #include <boost/asio.hpp>
@@ -10,18 +10,18 @@ namespace http = boost::beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
-class HttpConnection
+class SocketConnection
 {
     std::shared_ptr<tcp::socket> _socket;
 public:
-    HttpConnection(std::shared_ptr<tcp::socket> socket):
+    SocketConnection(std::shared_ptr<tcp::socket> socket):
         _socket(std::move(socket))
     { }
     tcp::socket & socket()
     {
         return *_socket;
     }
-    ~HttpConnection()
+    ~SocketConnection()
     {
         // Закрываем соединение
         if (_socket != nullptr)
@@ -32,4 +32,4 @@ public:
     }
 };
 
-#endif // HTTPCONNECTION_H
+#endif // SOCKETCONNECTION_H

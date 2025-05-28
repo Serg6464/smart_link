@@ -1,15 +1,15 @@
-#ifndef HTTPREADSOCKETCONNECTION_H
-#define HTTPREADSOCKETCONNECTION_H
+#ifndef HTTPREADCONNECTION_H
+#define HTTPREADCONNECTION_H
 
 #include "ireadableconnection.h"
 #include "ihttprequest.h"
 
-class HttpReadSocketConnection: public IReadableConnection
+class HttpReadConnection: public IReadableConnection
 {
-    std::shared_ptr<HttpConnection> _connection;
+    std::shared_ptr<SocketConnection> _connection;
     std::shared_ptr<IHttpRequest> _request;
 public:
-    HttpReadSocketConnection( std::shared_ptr<HttpConnection> connection, std::shared_ptr<IHttpRequest> request):
+    HttpReadConnection( std::shared_ptr<SocketConnection> connection, std::shared_ptr<IHttpRequest> request):
         _connection(connection), _request(request)
     {};
 
@@ -24,4 +24,4 @@ public:
 };
 
 
-#endif // HTTPREADSOCKETCONNECTION_H
+#endif // HTTPREADCONNECTION_H

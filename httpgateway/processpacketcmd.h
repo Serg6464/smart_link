@@ -3,16 +3,16 @@
 
 #include <ICommand.h>
 #include "ihttprequest.h"
-#include "httpconnection.h"
+#include "socketconnection.h"
 #include <memory>
 
 class ProcessPacketCmd : public ICommand
 {
-    std::shared_ptr<HttpConnection> _connection;
+    std::shared_ptr<SocketConnection> _connection;
     std::shared_ptr<IHttpRequest> _request;
 public:
-    ProcessPacketCmd(std::shared_ptr<HttpConnection>,std::shared_ptr<IHttpRequest>);
-    static std::shared_ptr<ProcessPacketCmd>Create(std::shared_ptr<HttpConnection>,std::shared_ptr<IHttpRequest>);
+    ProcessPacketCmd(std::shared_ptr<SocketConnection>,std::shared_ptr<IHttpRequest>);
+    static std::shared_ptr<ProcessPacketCmd>Create(std::shared_ptr<SocketConnection>,std::shared_ptr<IHttpRequest>);
 
 
     // ICommand interface
