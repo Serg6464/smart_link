@@ -12,7 +12,7 @@ void CheckConditionCommand::Execute()
 {
     auto conditionObject = IoC::Resolve<IConditionPtr>("Condition.Get", m_condition, m_parameter);
 
-    if (!conditionObject->Check(m_request))
+    if ((conditionObject == nullptr) || !conditionObject->Check(m_request))
     {
         throw new RuntimeError("CheckConditionCommand::Execute(): checking failed");
     }

@@ -42,6 +42,11 @@ int main(void)
         EndPoint mainLoop;
         mainLoop.Run();
     }
+    catch(const std::runtime_error& e)
+    {
+        std::cerr << e.what() << '\n';
+        return -1;
+    }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
@@ -151,46 +156,30 @@ boost::json::value load_json_from_file(const std::string& filename) {
     }
 }
 
+// Проходим по всем правилам
+int json_config_verify( JsonPtr jsonRules)
+{
+    for (const auto& ruleNode : boost::adaptors::reverse(jsonRules->as_object().at("rules").as_array())) {
+        // Проверяем условия
+        for (const auto& conditionNode : ruleNode.as_object().at("conditions").as_array()) {
+
+            auto conditionObject = IoC::Resolve<IConditionPtr>("Condition.Get",
+                                                               std::string(conditionNode.as_object().at("type").as_string().c_str()),
+                                                               std::string(conditionNode.as_object().at("value").as_string().c_str()));
+
+            if (conditionObject == nullptr){
+                //not valid rule
+                throw std::runtime_error( conditionNode.as_object().at("type").as_string().c_str());
+            }
+
+        }
+    }
+    return 1;
+}
+
+
 void IoC_Init()
 {
-/*    std::string json_str = R"(
-    {
-        "version": "1.0",
-        "rules":
-        [
-            {
-                "name": "Правило для мобильных устройств",
-                "conditions":
-                [
-                    {
-                        "type": "target",
-                        "value": "/welcome"
-                    },
-                    {
-                      "type": "user_agent_contain",
-                      "value": "Mobile"
-                    }
-                ],
-                "redirect_url": "https://mobile.example.com"
-            },
-            {
-                "name": "Правило для Chrome до начала рабочего времени",
-                "conditions": [
-                {
-                  "type": "user_agent_contain",
-                  "value": "Chrome"
-                },
-                {
-                  "type": "time_of_day_before",
-                  "value": "08:00:00"
-                }
-                ],
-                "redirect_url": "https://early.example.com"
-            }
-        ]
-    }
-    )";
-*/
 
     std::string json_str = R"(
     {
@@ -240,6 +229,8 @@ void IoC_Init()
     )";
 //    JsonPtr jsonRules = std::make_shared<Json>(boost::json::parse(json_str));
     JsonPtr jsonRules = std::make_shared<Json>(load_json_from_file("./config/redirection_rules.json"));
+
+
 
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",
@@ -341,5 +332,13 @@ void IoC_Init()
                 }
                 return (IConditionPtr)nullptr;
             })))->Execute();
+    try
+    {
+        json_config_verify(jsonRules);
+    } catch ( std::exception &e )
+    {
+        std::cout << "json rules not valid: "<< e.what() << "\n";
+        throw std::exception(e);
+    }
 
  }
