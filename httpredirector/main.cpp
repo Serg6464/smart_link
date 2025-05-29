@@ -21,6 +21,7 @@
 #include "icondition.h"
 #include <MacroCommand.h>
 #include "conditiontarget.h"
+#include <boost/range/adaptor/reversed.hpp>
 #include "plugindllcondition.h"
 #include <dlfcn.h> // Для работы с динамическими библиотеками (DLL)
 #include <dirent.h> // Для перечисления файлов в каталоге
@@ -65,7 +66,6 @@ void LoadPluginsInfo(std::map<std::string, std::string > *pconditions_plugin)
      std::string condition_name;
      // Проверяем каждую DLL
      for (const auto& dllFile : dllFiles) {
-std::cout << "check " << dllFile << "\n";
          condition_name = loadAndCheckDLL(dllFile);
          if ( condition_name != "") {
              // функции найдены в DLL
@@ -174,18 +174,7 @@ void IoC_Init()
         "rules":
         [
             {
-                "name": "Тестовое правило",
-                "conditions":
-                [
-                    {
-                        "type": "target",
-                        "value": "/welcome"
-                    }
-                ],
-                "redirect_url": "https://welcome.example.com"
-            },
-            {
-                "name": "Тестовое правило",
+                "name": "Page - notime to enter when time no valid",
                 "conditions":
                 [
                     {
@@ -198,8 +187,29 @@ void IoC_Init()
                     }
                 ],
                 "redirect_url": "https://notime.to.enter"
+            },
+            {
+                "name": "Welcome page",
+                "conditions":
+                [
+                    {
+                        "type": "target",
+                        "value": "/welcome"
+                    }
+                ],
+                "redirect_url": "https://welcome.example.com"
+            },
+            {
+                "name": "Переход на гугл",
+                "conditions":
+                [
+                    {
+                        "type": "target_contains",
+                        "value": "/search"
+                    }
+                ],
+                "redirect_url": "https://www.google.com"
             }
-
 
         ]
     }
@@ -212,7 +222,7 @@ void IoC_Init()
         make_container(std::function<std::shared_ptr<SocketConnection>()>( []() {
                 boost::asio::io_context io_context;
                 tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 8091));
-    std::cout << "start waiting request\n";
+    std::cout << "start waiting request to link resolve\n";
                 std::shared_ptr<tcp::socket> socket = std::make_shared<tcp::socket>(io_context);
                 std::shared_ptr<SocketConnection> conn = std::make_shared<SocketConnection>(socket);
                 acceptor.accept( conn->socket() );
@@ -259,7 +269,7 @@ void IoC_Init()
                 //в данной реализации правила из json
                 RulesHandlerPtr rules_chain = nullptr;
                 // Проходим по всем правилам
-                for (const auto& ruleNode : jsonRules->as_object().at("rules").as_array()) {
+                for (const auto& ruleNode : boost::adaptors::reverse(jsonRules->as_object().at("rules").as_array())) {
                     std::vector<ICommandPtr> commands;
                     // Собираем условия
                     for (const auto& conditionNode : ruleNode.as_object().at("conditions").as_array()) {
@@ -294,7 +304,7 @@ void IoC_Init()
             make_container(std::function<IConditionPtr(std::string condition, std::string)>( [conditions_plugin](std::string condition, std::string parameter) {
 
 
-                std::cout<<"resolve condition "<< condition << std::endl;
+                //std::cout<<"resolve condition "<< condition << std::endl;
                 auto it = conditions_plugin.find(condition);
                 if( it != conditions_plugin.end() ){
                     return PluginDllCondition::PluginDllConditionCreate( it->second, parameter);
