@@ -38,7 +38,6 @@ IConditionPtr PluginDllCondition::PluginDllConditionCreate(std::string dllPath, 
     // Проверяем, существует ли функция
     if (dll_CreateNewConditionObj) {
         std::shared_ptr<ICondition> pNewConditionObj = std::shared_ptr<ICondition>(dll_CreateNewConditionObj(parameter));
-std::cout << "condition :" << dllPath << "new addr: " << pNewConditionObj;
 
         return std::make_shared<PluginDllCondition>( handle, pNewConditionObj);
     } else {

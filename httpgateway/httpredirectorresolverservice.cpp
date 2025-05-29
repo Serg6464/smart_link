@@ -43,7 +43,7 @@ std::string HttpRedirectorResolverService::GetLocation()
         BoostJsonObjectPtr response = BoostJsonObject::Create();
          // Создаем объект JSON
          *(response->getJson()) = boost::json::parse(jsonString);
-         std::cout << *(response->getJson()); //<< std::cin;request;
+         //std::cout << *(response->getJson()); //<< std::cin;request;
 
         newLocation = response->getJson()->as_object().at("location").as_string().c_str();
      } catch ( const std::exception& e)

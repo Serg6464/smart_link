@@ -24,7 +24,6 @@ public:
     bool Check(JsonPtr json)
     {
         auto target = json->at("target").as_string();
-        std::cout << "check target:" << target << " is? " << _reference_value << std::endl;
         return target == _reference_value;
     }
 };

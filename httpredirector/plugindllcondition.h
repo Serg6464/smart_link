@@ -4,7 +4,6 @@
 #include "icondition.h"
 #include <memory>
 #include <string>
-#include <iostream>
 
 class PluginDllCondition : public ICondition
 {
@@ -21,7 +20,6 @@ public:
     bool Check(JsonPtr json)
     {
         if( _condition != nullptr ){
-            std::cout << "condition :" "new addr: " << _condition;
             return _condition->Check(json);
         }
         return false;

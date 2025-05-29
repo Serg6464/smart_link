@@ -22,7 +22,7 @@ void EndPoint::Run()
         auto conn = IoC::Resolve<std::shared_ptr<SocketConnection>>("Connection.GetNew");
         auto request = IoC::Resolve<std::shared_ptr<IHttpRequest>>("Request.GetNew",conn);
 
-        std::cout << *(request->getRequest()) << std::endl;
+        //std::cout << *(request->getRequest()) << std::endl;
         auto cmd = IoC::Resolve<ICommandPtr>("ProcessPacketCmd.Get", conn, request);
         //Запустить обработку пакета
         cmd->Execute();

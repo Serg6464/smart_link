@@ -35,7 +35,7 @@ public:
 
         // Создаем объект JSON
         *(_object->getJson()) = boost::json::parse(jsonString);
-        std::cout << *(_object->getJson()); //<< std::cin;request;
+        //std::cout << *(_object->getJson()); //<< std::cin;request;
     }
 };
 
