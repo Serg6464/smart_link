@@ -18,15 +18,6 @@
 #include "httprequestjsonobject.h"
 #include "httpredirectorresolverservice.h"
 
-/*
-#include "httpredirectorresolver.h"
-#include "ruleshandler.h"
-#include "checkconditioncommand.h"
-#include "icondition.h"
-#include <MacroCommand.h>
-#include "conditiontarget.h"
-*/
-
 
 //All logic dependency initialization. 
 void IoC_Init();
@@ -50,65 +41,6 @@ int main(void)
 
 void IoC_Init()
 {
-/*    std::string json_str = R"(
-    {
-        "version": "1.0",
-        "rules":
-        [
-            {
-                "name": "Правило для мобильных устройств",
-                "conditions":
-                [
-                    {
-                        "type": "target",
-                        "value": "/welcome"
-                    },
-                    {
-                      "type": "user_agent_contain",
-                      "value": "Mobile"
-                    }
-                ],
-                "redirect_url": "https://mobile.example.com"
-            },
-            {
-                "name": "Правило для Chrome до начала рабочего времени",
-                "conditions": [
-                {
-                  "type": "user_agent_contain",
-                  "value": "Chrome"
-                },
-                {
-                  "type": "time_of_day_before",
-                  "value": "08:00:00"
-                }
-                ],
-                "redirect_url": "https://early.example.com"
-            }
-        ]
-    }
-    )";
-*/
-
-    std::string json_str = R"(
-    {
-        "version": "1.0",
-        "rules":
-        [
-            {
-                "name": "Тестовое правило",
-                "conditions":
-                [
-                    {
-                        "type": "target",
-                        "value": "/welcome"
-                    }
-                ],
-                "redirect_url": "https://welcome.example.com"
-            }
-        ]
-    }
-    )";
-    JsonPtr jsonRules = std::make_shared<Json>(boost::json::parse(json_str));
 
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",

@@ -44,6 +44,7 @@ add_executable(httpredirector main.cpp
     ../exceptions/CommandException.cpp ../exceptions/CommandException.h
     sendnewlocationcommand.h
     conditiontarget.h
+    plugindllcondition.h plugindllcondition.cpp
     )
 
 target_link_libraries( httpredirector

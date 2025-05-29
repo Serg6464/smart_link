@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <map>
 #include <IoC.h>
 #include <ICommand.h>
 
@@ -20,6 +21,9 @@
 #include "icondition.h"
 #include <MacroCommand.h>
 #include "conditiontarget.h"
+#include "plugindllcondition.h"
+#include <dlfcn.h> // Для работы с динамическими библиотеками (DLL)
+#include <dirent.h> // Для перечисления файлов в каталоге
 
 
 //All logic dependency initialization. 
@@ -40,6 +44,87 @@ int main(void)
         return -1;
     }
     return 0;
+}
+
+/*Добавляем условия плагины
+ * плагины храним в dll в папке. каждая dll содержит функцию создания условия IConditionPtr CreateCondition(string parameter)
+ * и функцию получения имени условия. getConditionName для регистрации условия
+ */
+std::map<std::string, std::string> conditions_plugin;
+// загрузка плагинов
+std::string loadAndCheckDLL(const std::string& dllPath);
+std::vector<std::string> getDLLFiles(const std::string& directory);
+
+void LoadPluginsInfo(std::map<std::string, std::string > *pconditions_plugin)
+{
+     std::string currentDirectory = "./plugins"; //
+
+     // Получаем список файлов DLL в текущей директории
+     std::vector<std::string> dllFiles = getDLLFiles(currentDirectory);
+
+     std::string condition_name;
+     // Проверяем каждую DLL
+     for (const auto& dllFile : dllFiles) {
+std::cout << "check " << dllFile << "\n";
+         condition_name = loadAndCheckDLL(dllFile);
+         if ( condition_name != "") {
+             // функции найдены в DLL
+             pconditions_plugin->emplace(condition_name,dllFile);
+         }
+     }
+     std::cout << "Plugins registered:\n" << pconditions_plugin->size() << "\n";
+
+}
+
+// Функция для загрузки и поиска функции в DLL
+std::string loadAndCheckDLL(const std::string& dllPath)
+{
+    std::string conditionName;
+    // Открываем DLL
+    void* handle = dlopen(dllPath.c_str(), RTLD_LAZY);
+    if (!handle) {
+        std::cerr << "Ошибка загрузки DLL: " << dllPath << " - " << dlerror() << std::endl;
+        return "";
+    }
+
+    // Получаем указатель на функцию
+    std::string getConditionNameSymbol = "getConditionName";
+    typedef void (*GetConditionNameType)(std::string *);
+    GetConditionNameType dll_getConditionName = (GetConditionNameType)dlsym(handle, getConditionNameSymbol.c_str());
+    typedef ICondition (*CreateType)(const std::string &param);
+    CreateType dll_CreateNewConditionObj = (CreateType)dlsym(handle, "CreateNewConditionObj");
+    // Проверяем, существует ли функция
+    if (dll_getConditionName && dll_CreateNewConditionObj) {
+        dll_getConditionName(&conditionName);
+        // Закрываем DLL
+        dlclose(handle);
+        return conditionName;
+    } else {
+        std::cerr << "Функция " << getConditionNameSymbol << " не найдена в " << dllPath << std::endl;
+        // Закрываем DLL
+        dlclose(handle);
+        return "";
+    }
+}
+
+// Функция для перечисления файлов в каталоге
+std::vector<std::string> getDLLFiles(const std::string& directory)
+{
+    std::vector<std::string> dllFiles;
+    DIR* dir = opendir(directory.c_str());
+    if (dir) {
+        struct dirent* entry;
+        while ((entry = readdir(dir)) != nullptr) {
+            if (entry->d_type == DT_REG && std::string(entry->d_name).rfind(".so") != std::string::npos) {
+                // Заменяем "/" на "//" для совместимости с разными платформами
+                dllFiles.push_back(directory + "/" + entry->d_name);
+            }
+        }
+        closedir(dir);
+    } else {
+        std::cerr << "Ошибка при открытии каталога: " << directory << std::endl;
+    }
+    return dllFiles;
 }
 
 void IoC_Init()
@@ -98,7 +183,24 @@ void IoC_Init()
                     }
                 ],
                 "redirect_url": "https://welcome.example.com"
+            },
+            {
+                "name": "Тестовое правило",
+                "conditions":
+                [
+                    {
+                        "type": "target",
+                        "value": "/welcome"
+                    },
+                    {
+                        "type": "date_before",
+                        "value": "30-05-2025"
+                    }
+                ],
+                "redirect_url": "https://notime.to.enter"
             }
+
+
         ]
     }
     )";
@@ -178,16 +280,29 @@ void IoC_Init()
                 return rules_chain;
             } )))->Execute();
 
+    /*Добавляем условия плагины
+     * плагины храним в dll в папке. каждая dll содержит функцию создания условия IConditionPtr CreateCondition(string parameter)
+     * и функцию получения имени условия. getConditionName для регистрации условия
+     */
+    std::map<std::string, std::string> conditions_plugin;
+    // загрузка плагинов
+    LoadPluginsInfo(&conditions_plugin);
+
     IoC::Resolve<ICommandPtr>(
             "IoC.Register",
             "Condition.Get",
-            make_container(std::function<IConditionPtr(std::string condition, std::string)>( [](std::string condition, std::string parameter) {
+            make_container(std::function<IConditionPtr(std::string condition, std::string)>( [conditions_plugin](std::string condition, std::string parameter) {
 
-                // TODO: загрузка плагинов
-                std::cout<<"resolve condition "<<condition << std::endl;
-                if (condition == "target")
-                {
-                    return (IConditionPtr)ConditionTarget::Create(parameter);
+
+                std::cout<<"resolve condition "<< condition << std::endl;
+                auto it = conditions_plugin.find(condition);
+                if( it != conditions_plugin.end() ){
+                    return PluginDllCondition::PluginDllConditionCreate( it->second, parameter);
+                } else {
+                    if (condition == "target")
+                    {
+                        return (IConditionPtr)ConditionTarget::Create(parameter);
+                    }
                 }
                 return (IConditionPtr)nullptr;
             })))->Execute();
