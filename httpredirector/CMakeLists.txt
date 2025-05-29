@@ -45,10 +45,19 @@ add_executable(httpredirector main.cpp
     sendnewlocationcommand.h
     conditiontarget.h
     plugindllcondition.h plugindllcondition.cpp
+    config/redirection_rules.json
     )
 
 target_link_libraries( httpredirector
     Boost::json
+)
+
+add_custom_command(
+    TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/config
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/config
 )
 
 # include(GNUInstallDirs)

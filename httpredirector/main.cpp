@@ -6,6 +6,9 @@
 #include <ICommand.h>
 
 #include "endpoint.h"
+#include <boost/json.hpp>
+#include <boost/json/error.hpp>
+#include <fstream>
 
 #include <socketconnection.h>
 #include "jsonreadconnection.h"
@@ -127,6 +130,27 @@ std::vector<std::string> getDLLFiles(const std::string& directory)
     return dllFiles;
 }
 
+
+boost::json::value load_json_from_file(const std::string& filename) {
+    try {
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            throw std::runtime_error("Failed to open file");
+        }
+
+        std::string content((std::istreambuf_iterator<char>(file)),
+                           std::istreambuf_iterator<char>());
+
+        try {
+            return boost::json::parse(content);
+        } catch (const std::exception& e) {
+            throw std::runtime_error("JSON parse error: " + std::string(e.what()));
+        }
+    } catch (const std::exception& e) {
+        throw std::runtime_error("Error loading JSON: " + std::string(e.what()));
+    }
+}
+
 void IoC_Init()
 {
 /*    std::string json_str = R"(
@@ -214,7 +238,8 @@ void IoC_Init()
         ]
     }
     )";
-    JsonPtr jsonRules = std::make_shared<Json>(boost::json::parse(json_str));
+//    JsonPtr jsonRules = std::make_shared<Json>(boost::json::parse(json_str));
+    JsonPtr jsonRules = std::make_shared<Json>(load_json_from_file("./config/redirection_rules.json"));
 
     IoC::Resolve<ICommandPtr>(
         "IoC.Register",

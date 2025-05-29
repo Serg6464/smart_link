@@ -1,0 +1,44 @@
+{
+"version": "1.0",
+"rules":
+[
+    {
+        "name": "Page - notime to enter when time no valid",
+        "conditions":
+        [
+            {
+                "type": "target",
+                "value": "/welcome"
+            },
+            {
+                "type": "date_before",
+                "value": "30-05-2025"
+            }
+        ],
+        "redirect_url": "https://notime.to.enter"
+    },
+    {
+        "name": "Welcome page",
+        "conditions":
+        [
+            {
+                "type": "target",
+                "value": "/welcome"
+            }
+        ],
+        "redirect_url": "https://welcome.example.com"
+    },
+    {
+        "name": "Переход на гугл",
+        "conditions":
+        [
+            {
+                "type": "target_contains",
+                "value": "/search"
+            }
+        ],
+        "redirect_url": "https://www.google.com"
+    }
+
+]
+}
