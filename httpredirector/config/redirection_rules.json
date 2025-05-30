@@ -29,7 +29,7 @@
         "redirect_url": "https://welcome.example.com"
     },
     {
-        "name": "Переход на гугл",
+        "name": "Переход на google",
         "conditions":
         [
             {
