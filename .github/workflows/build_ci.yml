@@ -12,8 +12,11 @@ jobs:
 
         steps:
             - name: install gtest
-              run: sudo apt-get install -y libgtest-dev libgmock-dev libboost-all-dev
+              run: sudo apt-get install -y libgtest-dev libgmock-dev
 
+            - name: install boost
+              run: sudo apt-get install -y libboost-all-dev
+ 
             - name: checkout
               uses: actions/checkout@v4
             
@@ -24,4 +27,9 @@ jobs:
               run: cd build; make;
 
             - name: run tests
-              run: cd build; ./alltest;
+              run: cd build/IoC.test; ./ioc_test;
+            
+            - uses: actions/upload-artifact@v4
+              with:
+                name: my-artifact
+                path: docker.dir/ # or path/to/artifact
