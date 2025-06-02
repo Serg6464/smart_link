@@ -28,3 +28,8 @@ jobs:
 
             - name: run tests
               run: cd build/IoC.test; ./ioc_test;
+            
+            - uses: actions/upload-artifact@v4
+              with:
+              name: my-artifact
+              path: docker.dir/ # or path/to/artifact
