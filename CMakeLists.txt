@@ -4,6 +4,8 @@ project(smart_link LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(DOCKER_DIR "${CMAKE_SOURCE_DIR}/docker.dir/apps")
+ message(STATUS "Project Root Directory: ${CMAKE_SOURCE_DIR}")
 
 add_subdirectory(httpredirector.plugins)
 add_subdirectory(httpredirector)

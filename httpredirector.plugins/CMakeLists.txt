@@ -6,27 +6,24 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(./interface)
-#include_directories(../json)
 
-add_library(target_contains SHARED target_contains.cpp
+function(copy_plugin_to_target_dir target)
+    add_custom_command(
+        TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "$<TARGET_PROPERTY:${target},BINARY_DIR>/$<TARGET_FILE_NAME:${target}>"
+            "${DOCKER_DIR}/plugins/$<TARGET_FILE_NAME:${target}>"
     )
+endfunction(copy_plugin_to_target_dir)
 
-
-# Установка флагов компиляции
-set_target_properties(target_contains PROPERTIES
-    COMPILE_FLAGS "-fPIC"
-)
-
-add_library(date_before SHARED date_before.cpp
+function(newplugin target)
+    add_library(${target} SHARED ${target}.cpp)
+    set_target_properties(target_contains PROPERTIES
+        COMPILE_FLAGS "-fPIC"
     )
+    copy_plugin_to_target_dir(${target})
+endfunction(newplugin)
 
-set_target_properties(date_before PROPERTIES
-    COMPILE_FLAGS "-fPIC"
-)
+newplugin(target_contains)
+newplugin(date_before)
 
-
-# include(GNUInstallDirs)
-# install(TARGETS httpgateway
-#     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-# )
