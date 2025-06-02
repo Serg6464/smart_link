@@ -27,4 +27,4 @@ jobs:
               run: cd build; make;
 
             - name: run tests
-              run: cd build/IoC_test; ls -all; ./ioc_test;
+              run: cd build/ioc_test; ls -all; ./ioc_test;
