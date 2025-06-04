@@ -80,7 +80,7 @@ void LoadPluginsInfo(std::map<std::string, std::string > *pconditions_plugin)
              pconditions_plugin->emplace(condition_name,dllFile);
          }
      }
-     std::cout << "Plugins registered:\n" << pconditions_plugin->size() << "\n";
+     std::cout << "Plugins registered:\n" << pconditions_plugin->size() << std::endl;
 
 }
 

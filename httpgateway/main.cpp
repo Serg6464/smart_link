@@ -48,7 +48,6 @@ void IoC_Init()
         make_container(std::function<std::shared_ptr<SocketConnection>()>( []() {
                 boost::asio::io_context io_context;
                 tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 8080));
-    std::cout << "start waiting request\n";
                 std::shared_ptr<tcp::socket> socket = std::make_shared<tcp::socket>(io_context);
                 std::shared_ptr<SocketConnection> conn = std::make_shared<SocketConnection>(socket);
                 acceptor.accept( conn->socket() );
