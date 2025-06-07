@@ -12,7 +12,7 @@ function(copy_plugin_to_target_dir target)
         TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             "$<TARGET_PROPERTY:${target},BINARY_DIR>/$<TARGET_FILE_NAME:${target}>"
-            "${DOCKER_DIR}/plugins/$<TARGET_FILE_NAME:${target}>"
+            "${DOCKER_DIR}/apps/plugins/$<TARGET_FILE_NAME:${target}>"
     )
 endfunction(copy_plugin_to_target_dir)
 
