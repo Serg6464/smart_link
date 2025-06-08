@@ -65,12 +65,12 @@ add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
         "$<TARGET_PROPERTY:${PROJECT_NAME},BINARY_DIR>/$<TARGET_FILE_NAME:${PROJECT_NAME}>"
-        "${DOCKER_DIR}/$<TARGET_FILE_NAME:${PROJECT_NAME}>"
+        "${DOCKER_DIR}/apps/$<TARGET_FILE_NAME:${PROJECT_NAME}>"
 )
 add_custom_command(
     TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/config
-    "${DOCKER_DIR}/config"
+    "${DOCKER_DIR}/apps/config"
 )

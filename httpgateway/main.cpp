@@ -48,7 +48,6 @@ void IoC_Init()
         make_container(std::function<std::shared_ptr<SocketConnection>()>( []() {
                 boost::asio::io_context io_context;
                 tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 8080));
-    std::cout << "start waiting request\n";
                 std::shared_ptr<tcp::socket> socket = std::make_shared<tcp::socket>(io_context);
                 std::shared_ptr<SocketConnection> conn = std::make_shared<SocketConnection>(socket);
                 acceptor.accept( conn->socket() );
@@ -93,7 +92,7 @@ void IoC_Init()
         "ProcessPacketCmd.GetRedirector",
         make_container(std::function<IRedirectorPtr(std::shared_ptr<IHttpRequest>)>( [](std::shared_ptr<IHttpRequest> req) {
                 auto json_request = HttpRequestJsonObject::Create(req);
-                IRedirectorPtr res = std::make_shared<HttpRedirectorResolverService>(json_request, "127.0.0.1", 8091);
+                IRedirectorPtr res = std::make_shared<HttpRedirectorResolverService>(json_request, "redirector", 8091);
                 return res;
             } )))->Execute();
 

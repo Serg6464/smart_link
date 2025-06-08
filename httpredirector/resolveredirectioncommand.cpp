@@ -12,8 +12,6 @@ void ResolveRedirectionCommand::Execute()
 
         JsonPtr json = _response->getJson();
         json->as_object().emplace("location", new_location);
-std::cout << *json << "\n";
-std::cout << "redirect_to: " << new_location << "\n";
     } catch ( IException *e )
     {
         delete e;
