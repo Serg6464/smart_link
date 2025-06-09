@@ -17,7 +17,7 @@
 #include "processpacketcmd.h"
 #include "httprequestjsonobject.h"
 #include "httpredirectorresolverservice.h"
-
+#include "monitorrequesthandlerdecorator.h"
 
 //All logic dependency initialization. 
 void IoC_Init();
@@ -74,7 +74,7 @@ void IoC_Init()
                headHandler->setNext(badHandler);
                badHandler->setNext(redirectHandler);
                redirectHandler->setNext(notallowHandler);
-                return (std::shared_ptr<IRequestHandler>)headHandler;
+                return (std::shared_ptr<IRequestHandler>)std::make_shared<MonitorRequestHandlerDecorator>(headHandler,"monitor_service", 8092);
             } )))->Execute();
 
     IoC::Resolve<ICommandPtr>(

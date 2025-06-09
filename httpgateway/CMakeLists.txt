@@ -57,6 +57,7 @@ add_executable(httpgateway main.cpp
     ../commands/MacroCommand.cpp ../commands/MacroCommand.h
     ../exceptions/CommandException.cpp ../exceptions/CommandException.h
     httpredirectorresolverservice.h httpredirectorresolverservice.cpp
+    monitorrequesthandlerdecorator.h monitorrequesthandlerdecorator.cpp
     )
 
 target_link_libraries( httpgateway
