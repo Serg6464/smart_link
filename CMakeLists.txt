@@ -10,9 +10,10 @@ set(DOCKER_DIR "${CMAKE_SOURCE_DIR}/docker.dir")
 add_subdirectory(httpredirector.plugins)
 add_subdirectory(httpredirector)
 add_subdirectory(httpgateway)
-
+add_subdirectory(monitor.service)
 
 add_subdirectory(IoC.test)
+#add_subdirectory(httpgateway.test)
 
 include(CTest)
 enable_testing()

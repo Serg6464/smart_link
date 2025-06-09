@@ -1,19 +1,21 @@
 #include "httprequest.h"
 #include <boost/beast/core.hpp>
 
-HttpRequest::HttpRequest(const std::string& raw_request)
+HttpRequest::HttpRequest(std::shared_ptr<http::request<http::string_body> > request)
+    :request_(request)
 {
-    // Создаем буфер для парсинга
-    boost::beast::multi_buffer buffer;
-    boost::beast::error_code ec;
-    buffer.commit(raw_request.size());
-    boost::beast::ostream(buffer) << raw_request.data();
 
-    // Парсим запрос
-    http::request_parser<http::string_body> parser;
-    parser.eager( true );
-    parser.put(buffer.data(), ec);
-    //request_ = parser.release();
+}
+
+std::shared_ptr<HttpRequest> HttpRequest::Create()
+{
+    std::shared_ptr<http::request<http::string_body>> req = std::make_shared<http::request<http::string_body>>();
+    return std::make_shared<HttpRequest>(req);
+}
+
+std::shared_ptr<http::request<http::string_body> > HttpRequest::getRequest()
+{
+    return request_;
 }
 
 

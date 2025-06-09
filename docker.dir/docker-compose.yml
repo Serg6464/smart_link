@@ -6,25 +6,29 @@ services:
       context: .
       dockerfile: gateway.Dockerfile
     container_name: gateway
-    environment:
-      - ENV_VAR_1=value1
-      - ENV_VAR_2=value2
     ports:
       - "8080:8080"
     networks:
       - app-network
     depends_on:
       - redirector
-
+      - monitor_service
   redirector:
     build:
       context: .
       dockerfile: redirector.Dockerfile
     container_name: redirector
-    environment:
-      - REDIRECT_URL=http://example.com
     ports:
       - "8091:8091"
+    networks:
+      - app-network
+  monitor_service:
+    build:
+      context: .
+      dockerfile: monitor.service.Dockerfile
+    container_name: monitor_service
+    ports:
+      - "8092:8092/udp"
     networks:
       - app-network
 
